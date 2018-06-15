@@ -88,8 +88,6 @@ trueOutput=[]
 
 
 def convertMorse():
-    # For Testing input TO BE REMOVED
-    inputString = str(input("Input . and - here:   "))
     for count in range(0,len(morseDict)):
         if inputString == morseDict[count]:
             numOutput.append(count)
