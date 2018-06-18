@@ -81,7 +81,7 @@ letterDict = {
     }
 
 
-inputTable = [".",".","-","-","-"]
+inputTable = []
 inputString = ''.join(inputTable)
 numOutput=[]
 trueOutput=[]
