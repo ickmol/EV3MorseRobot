@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from ev3dev.ev3 import *
-from timeit import default_timer as timer
+from timeit import default_timer as time
 # Initialising Variables
 inputAllowed = True
 programActive = True
@@ -90,30 +90,58 @@ Sound.play_song((
 inputTable = []
 numOutput = []
 trueOutput = []
-global sky
-sky = "Blue"
+sky = True
+StartTime = 0
+EndTime = 0
+sea = True
 # Initialise Other Processes
 
+
+def convertMorse():
+    global inputTable
+    global numOutput
+    inputString = ''.join(inputTable)  # Converts inputTable into a single string
+    for count in range(0, len(morseDict)):
+        if inputString == morseDict[count]:
+            numOutput.append(count)
+            print(numOutput)
+    for count in range(0, len(numOutput)):  # Loops the conversion from number to letter so that it can handle conversions of multiple numbers at once
+        trueOutput.append(letterDict[numOutput[count]])  # Adds the letter to the trueOutput table
+        print(trueOutput)
+
+
 def expectInput():
-    ts1 = TouchSensor('in2')
-    ts2 = TouchSensor('in3')
     global sky
-    if ts1.is_pressed:
+    global sea
+    global StartTime
+    global EndTime
+    global inputTable
+    if TouchSensor('in2').is_pressed and sky:
         inputTable.append(".")
         print(inputTable)
-        Sound.play_song((
-            ('D2', 'q'),
-        ))
-        sky = "pink"
-    elif ts2.is_pressed:
+        StartTime = time()
+#       Sound.play_song((
+#           ('D2', 'q'),
+#       ))
+        sky = False
+        StartTime = time()
+    elif TouchSensor('in3').is_pressed and sky:
         inputTable.append("-")
         print(inputTable)
-        Sound.play_song((
-            ('D4', 'q'),
-        ))
-        sky = "pink"
+        StartTime = time()
+#       Sound.play_song((
+#           ('D4', 'q'),
+#       ))
+        sky = False
+    if TouchSensor('in2').is_pressed or TouchSensor('in3').is_pressed:
+       sky = False
     else:
-        sky = "Blue"
+        sky = True
+        EndTime = time()
+
+    if StartTime + 5 <= EndTime and sea:
+        convertMorse()
+        sea = False
 '''
 def touchInput():           # Defines a function which can be called upon in the main code at any time
     StartTime = 0    # Log a time within system clock as a value, the is considered the "Last Pressed" time
@@ -152,7 +180,7 @@ def touchInput():           # Defines a function which can be called upon in the
 
     print('Ending Input... Please Wait!')
     inputString = str(inputTable)
-'''
+
 
 
 #Converts Morse code into number code (morseDict)
@@ -172,7 +200,7 @@ def displayOutput():
     print(inputString)
     print(trueOutput)
 
-'''
+
 while programActive:
     touchInput()
     convertMorse()
@@ -184,12 +212,9 @@ while programActive:
 '''
 
 #Runs program
-def run():
-    global sky
-    while sky == "Blue":
-        expectInput()
-        if sky != "Blue":
-            break
-    run()
+canRun = True
 
-run()
+while canRun:
+    expectInput()
+
+
